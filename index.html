@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF‑8">
+  <title>Faucet 0G Testnet</title>
+</head>
+<body>
+  <h1>Faucet 0G Testnet (Galileo)</h1>
+  <form id="form">
+    <input type="text" id="address" placeholder="Adresse 0G testnet" required style="width: 300px;">
+    <button type="submit">Demander 0.01 OG</button>
+  </form>
+  <pre id="result"></pre>
+
+  <script>
+    const form = document.getElementById("form");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const addr = document.getElementById("address").value;
+      result.textContent = "Envoi en cours…";
+      try {
+        const res = await fetch("/request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: addr })
+        });
+        const data = await res.json();
+        result.textContent = data.txHash ? `Tx envoyée : ${data.txHash}` : `Erreur : ${data.error}`;
+      } catch (err) {
+        result.textContent = `Erreur réseau : ${err.message}`;
+      }
+    });
+  </script>
+
+  <footer style="margin-top: 2em; font-size: 0.9em; color: gray;">
+    By Techaddict | <a href="/download">Télécharger le code source</a>
+  </footer>
+</body>
+</html>
