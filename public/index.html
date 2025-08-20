@@ -179,7 +179,7 @@
 
     async function requestTokens() {
         const address = document.getElementById('address').value;
-        const button = document.querySelector('button');
+        const button = document.getElementById('requestBtn');
         const result = document.getElementById('result');
 
         if (!address || !address.startsWith('0x')) {
@@ -203,7 +203,9 @@
             const data = await response.json();
 
             if (response.ok) {
-                // Transaction envoyée
+                localStorage.setItem(STORAGE_KEY, Date.now());
+                hideButtonFor24h();
+                
                 const explorerUrl = `https://chainscan-galileo.0g.ai//tx/${data.txHash}`;
                 result.innerHTML = `
                     <div class="result success">
