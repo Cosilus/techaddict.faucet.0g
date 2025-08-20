@@ -34,7 +34,7 @@ app.post("/request", async (req, res) => {
   try {
     const tx = await wallet.sendTransaction({
       to: address,
-      value: ethers.parseEther("0.01")
+      value: ethers.parseEther("0.1")
     });
     await tx.wait();
     res.json({ txHash: tx.hash });
