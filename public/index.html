@@ -1,41 +1,205 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
+
 <head>
-  <meta charset="UTF‑8">
-  <title>Faucet 0G Testnet</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0G Labs Faucet</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('background.png') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding-top: 60px;
+}
+
+
+        .container {
+      background: #c77dff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo {
+      position: absolute;
+      top: 55px;
+      left: 60px;
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #f8f9fa;
+      margin-bottom: 10px;
+        }
+
+        p {
+            color: #f8f9fa;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 93%;
+            padding: 14px;
+            margin: 12px 0;
+            border: 1px solid #D8E6F3;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 50%;
+            padding: 14px;
+            background-color: #5a189a;
+            color: #f8f9fa;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+
+        }
+
+        button:hover {
+            background-color: #cccc;
+        }
+
+        button:disabled {
+            background-color: #ccccc;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            word-break: break-word;
+            text-align: left;
+        }
+
+        .success {
+            background-color: #5a189a;
+            color: #f8f9fa;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        @media (max-width: 600px) {
+            .logo {
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 36px;
+                height: 36px;
+            }
+            
+            .container {
+                padding-top: 60px;
+            }
+        }
+        .footer-credit {
+    position: fixed;
+    bottom: 10px;
+    right: 16px;
+    font-size: 12px;
+    color: #f8f9fa;
+    opacity: 0.8;
+    z-index: 1000;
+}
+
+    </style>
 </head>
+
 <body>
-  <h1>Faucet 0G Testnet (Galileo)</h1>
-  <form id="form">
-    <input type="text" id="address" placeholder="Address 0G testnet" required style="width: 300px;">
-    <button type="submit">Claim 0.01 OG</button>
-  </form>
-  <pre id="result"></pre>
+    <div class="container">
+        <img src="logo.png" alt="Logo" class="logo" />
+        <h1>0G Labs Testnet Faucet</h1>
+        <p>Request 0.1 0G for testing on testnet</p>
 
-  <script>
-    const form = document.getElementById("form");
-    const result = document.getElementById("result");
+        <input type="text" id="address" placeholder="Enter your wallet address (0x...)">
+        <button onclick="requestTokens()">Request Tokens</button>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const addr = document.getElementById("address").value;
-      result.textContent = "Sending…";
-      try {
-        const res = await fetch("/request", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ address: addr })
-        });
-        const data = await res.json();
-        result.textContent = data.txHash ? `Tx sent : ${data.txHash}` : `Erreur : ${data.error}`;
-      } catch (err) {
-        result.textContent = `Error network : ${err.message}`;
-      }
-    });
-  </script>
+        <div id="result"></div>
+    </div>
 
-  <footer style="margin-top: 2em; font-size: 0.9em; color: gray;">
-    By Techaddict 
-  </footer>
+   <script>
+    async function requestTokens() {
+        const address = document.getElementById('address').value;
+        const button = document.querySelector('button');
+        const result = document.getElementById('result');
+
+        if (!address || !address.startsWith('0x')) {
+            result.innerHTML = `<div class="result error">⚠️ Please enter a valid wallet address.</div>`;
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = 'Sending...';
+        result.innerHTML = '';
+
+        try {
+            const response = await fetch('https://techaddict-faucet-0g.onrender.com/request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ address })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Transaction envoyée
+                const explorerUrl = `https://chainscan-galileo.0g.ai//tx/${data.txHash}`;
+                result.innerHTML = `
+                    <div class="result success">
+                    ✅ Success! Your transaction was sent.<br>
+                    <a href="${explorerUrl}" target="_blank" rel="noopener"
+                    style="display:inline-block;margin-top:8px;padding:8px 14px;background:#5a189a;color:#Df8f9fa;border-radius:6px;text-decoration:none;">
+                    View on Explorer</a>
+                    </div>`;
+            } 
+            else if (response.status === 429) {
+                // Cooldown actif
+                const cooldownMs = data.cooldown;
+                const cooldownSeconds = Math.ceil(cooldownMs / 1000);
+                const h = Math.floor(cooldownSeconds / 3600);
+                const m = Math.floor((cooldownSeconds % 3600) / 60);
+                const s = cooldownSeconds % 60;
+                result.innerHTML = `<div class="result error">⏳ Please wait ${h}h ${m}m ${s}s before requesting again.</div>`;
+            } 
+            else {
+                result.innerHTML = `<div class="result error">❌ Error: ${data.error}</div>`;
+            }
+
+        } catch (error) {
+            result.innerHTML = `<div class="result error">⚠️ Network error: ${error.message}</div>`;
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Request Tokens';
+        }
+    }
+</script>
+    <div class="footer-credit">Built by Techaddict</div>
 </body>
+
 </html>
