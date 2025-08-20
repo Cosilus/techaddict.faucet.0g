@@ -136,7 +136,7 @@
         <p>Request 0.1 0G for testing on testnet</p>
 
         <input type="text" id="address" placeholder="Enter your wallet address (0x...)">
-        <button onclick="requestTokens()">Request Tokens</button>
+        <button id="requestBtn" onclick="requestTokens()">Request Tokens</button>
 
         <div id="result"></div>
         
@@ -233,6 +233,10 @@
             button.textContent = 'Request Tokens';
         }
     }
+        window.onload = () => {
+    hideButtonFor24h();
+};
+
 </script>
     <div class="footer-credit">Built by Techaddict</div>
 </body>
